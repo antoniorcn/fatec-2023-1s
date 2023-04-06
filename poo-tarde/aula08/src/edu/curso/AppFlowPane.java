@@ -5,29 +5,24 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
-public class PrimeiroProgramaJavaFX extends Application {
+public class AppFlowPane extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		Pane painel = new Pane();
+		FlowPane painel = new FlowPane();
 		painel.setStyle("-fx-background-color: 'lightcyan'");
 		Scene scn = new Scene(painel);
 		
 		Button btnTeste = new Button("Aperte-me");
-		// painel.getChildren().add(btnTeste);
-		btnTeste.relocate(260, 180);
 		
 		Label lbl = new Label("Texto Simples");
-		// painel.getChildren().add(lbl);
-		lbl.relocate(240, 140);
 		
 		TextField txt = new TextField();
-		// painel.getChildren().add(txt);
-		txt.relocate(330, 140);
-		
+	
 		painel.getChildren().addAll(btnTeste, lbl, txt);
 		
 		stage.setScene(scn);

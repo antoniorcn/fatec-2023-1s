@@ -1,34 +1,38 @@
 package edu.curso;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
-public class PrimeiroProgramaJavaFX extends Application {
+public class AppStackPane extends Application {
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		Pane painel = new Pane();
+		StackPane painel = new StackPane();
 		painel.setStyle("-fx-background-color: 'lightcyan'");
 		Scene scn = new Scene(painel);
 		
+		painel.setAlignment(Pos.BASELINE_LEFT);
+		
 		Button btnTeste = new Button("Aperte-me");
-		// painel.getChildren().add(btnTeste);
-		btnTeste.relocate(260, 180);
-		
+		btnTeste.relocate(100, 100);
 		Label lbl = new Label("Texto Simples");
-		// painel.getChildren().add(lbl);
-		lbl.relocate(240, 140);
-		
+		lbl.relocate(100, 120);
 		TextField txt = new TextField();
-		// painel.getChildren().add(txt);
-		txt.relocate(330, 140);
+		txt.relocate(100, 140);
 		
-		painel.getChildren().addAll(btnTeste, lbl, txt);
+		StackPane.setMargin(btnTeste, 
+				new Insets(50, 100, 100, 50));
+	
+		painel.getChildren().addAll(txt,btnTeste, lbl);
 		
 		stage.setScene(scn);
 		stage.setWidth(600);
