@@ -1,11 +1,13 @@
 package edu.curso;
 
 import javafx.application.Application;
+import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
@@ -43,11 +45,27 @@ public class PratoFormulario extends Application {
 		painel.add(txtIngredientes, 1, 2, 1, 3);
 		painel.add(btnSalvar, 0, 5);
 		
+		btnSalvar.addEventFilter(ActionEvent.ANY,
+			e->{
+				Prato p = new Prato();
+				p.setCodigo(txtCodigo.getText());
+				p.setNome(txtNome.getText());
+				p.setIngredientes(txtIngredientes.getText());
+				System.out.println(p);
+			}
+		);
+		
 		stage.setScene(scn);
 		stage.show();
 	}
 	
 	public static void main(String[] args) {
+//		Prato p1 = new Prato();
+//		p1.setNome("Lasanha");
+//		p1.setCodigo("001");
+//		p1.setIngredientes("Macarrão, presunto, queijo e molho");
+//		System.out.println(p1);
+		
 		Application.launch(args);
 	}
 
