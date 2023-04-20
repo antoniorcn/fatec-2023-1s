@@ -1,4 +1,4 @@
-package edu.curso;
+package edu.curso.bce.adaptado;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -24,9 +24,9 @@ public class DespesaForm extends Application {
 	private TextField txtRazao = new TextField();
 	private TextField txtData = new TextField();
 	private TextField txtValor = new TextField();
-	private List<Despesa> despesas = new ArrayList<>();
 	private DateTimeFormatter dtf = 
 			DateTimeFormatter.ofPattern("dd/MM/yyyy"); 
+	private DespesaControl control = new DespesaControl();
 	
 	public void limparCampos() { 
 		txtRazao.setText("");
@@ -34,7 +34,7 @@ public class DespesaForm extends Application {
 		txtValor.setText("");
 	}
 	
-	public void adicionar() { 
+	public Despesa boundaryToEntity() { 
 		Despesa d = new Despesa();
 		d.setRazao(txtRazao.getText());
 		try { 
@@ -43,7 +43,22 @@ public class DespesaForm extends Application {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		despesas.add(d);
+		return d;
+	}
+	
+	public void entityToBoundary(Despesa d) { 
+		if (d != null) { 
+			txtRazao.setText(d.getRazao());
+			txtData.setText( dtf.format(d.getData()) );
+			txtValor.setText( String.valueOf(d.getValor()) );
+		} else { 
+			limparCampos();
+		}
+	}
+	
+	public void adicionar() { 
+		Despesa d = boundaryToEntity();
+		control.adicionar(d);
 		Alert a = new Alert(AlertType.INFORMATION, 
 				"Despesa adicionada com sucesso", ButtonType.OK);
 		a.showAndWait();
@@ -51,15 +66,8 @@ public class DespesaForm extends Application {
 	}
 	
 	public void pesquisar() {
-		for (Despesa d : despesas) {
-			if (d.getRazao().toLowerCase()
-					.contains(txtRazao.getText().toLowerCase())) { 
-				txtRazao.setText(d.getRazao());
-				txtData.setText( dtf.format(d.getData()) );
-				txtValor.setText( String.valueOf(d.getValor()) );
-				break;
-			}
-		}
+		Despesa d = control.pesquisar(txtRazao.getText());
+		entityToBoundary(d);
 	}
 	
 	@Override
