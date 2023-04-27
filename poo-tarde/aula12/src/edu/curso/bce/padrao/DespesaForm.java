@@ -79,8 +79,7 @@ public class DespesaForm extends Application {
 		
 		TableColumn<Despesa, Void> col4 = new TableColumn<>("Ações");
 		Callback<TableColumn<Despesa, Void>, TableCell<Despesa, Void>> 
-			acoes = new Callback<TableColumn<Despesa, Void>, 
-									TableCell<Despesa, Void>>() {
+			acoes = new Callback<>() {
 			@Override
 			public TableCell<Despesa, Void> 
 					call(TableColumn<Despesa, Void> param) {
