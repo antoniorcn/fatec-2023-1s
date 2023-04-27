@@ -1,10 +1,11 @@
 package edu.curso.bce.padrao;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -12,14 +13,17 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.LocalDateStringConverter;
@@ -51,11 +55,11 @@ public class DespesaForm extends Application {
 	}
 	
 	public void adicionar() { 
-		control.adicionar();
+		control.salvar();
 		Alert a = new Alert(AlertType.INFORMATION, 
 				"Despesa adicionada com sucesso", ButtonType.OK);
 		a.showAndWait();
-		limparCampos();
+		control.novo();
 	}
 	
 	public void prepararTabela() { 
@@ -72,9 +76,49 @@ public class DespesaForm extends Application {
 		col3.setCellValueFactory(
 				new PropertyValueFactory<Despesa, Double>("valor")
 		);
-		table.getColumns().addAll(col1, col2, col3);
 		
+		TableColumn<Despesa, Void> col4 = new TableColumn<>("Ações");
+		Callback<TableColumn<Despesa, Void>, TableCell<Despesa, Void>> 
+			acoes = new Callback<TableColumn<Despesa, Void>, 
+									TableCell<Despesa, Void>>() {
+			@Override
+			public TableCell<Despesa, Void> 
+					call(TableColumn<Despesa, Void> param) {
+				final Button btnExcluir = 
+							new Button("Excluir");
+				TableCell <Despesa, Void> cell = new TableCell<>(){
+					{
+						btnExcluir.setOnAction(event -> {
+		                     Despesa data = table.getItems().get(getIndex());
+		                     control.excluir(data);
+		                 });
+					}
+					@Override
+	                public void updateItem(Void item, boolean empty) {
+	                    super.updateItem(item, empty);
+	                    if (empty) {
+	                        setGraphic(null);
+	                    } else {
+	                        setGraphic(btnExcluir);
+	                    }
+	                }
+				};
+				return cell;
+			}
+		};
+		col4.setCellFactory(acoes);
+		table.getColumns().addAll(col1, col2, col3, col4);
 		table.setItems(control.getList());
+		table.getSelectionModel().getSelectedItems().addListener(
+				new ListChangeListener<Despesa>(){
+					@Override
+					public void onChanged(Change<? extends Despesa> d) {
+						if (!d.getList().isEmpty()) {
+							control.fromEntity(d.getList().get(0));
+						}
+					}
+				}
+		);
 	}
 		
 	@Override
@@ -92,10 +136,15 @@ public class DespesaForm extends Application {
 		col2.setPercentWidth(70);
 		painelForm.getColumnConstraints().addAll(col1, col2);
 		
-		Button btnAdicionar = new Button("Adicionar");
+		Button btnNovo = new Button("Novo Item");
+		Button btnSalvar = new Button("Salvar");
 		Button btnPesquisar = new Button("Pesquisar");
 		
-		btnAdicionar.setOnAction((e)->{
+		btnNovo.setOnAction( e -> { 
+			control.novo();
+		});
+		
+		btnSalvar.setOnAction((e)->{
 			adicionar();
 		});
 		
@@ -111,8 +160,12 @@ public class DespesaForm extends Application {
 		painelForm.add(txtData, 1, 2);
 		painelForm.add(new Label("Valor"), 0, 3);
 		painelForm.add(txtValor, 1, 3);
-		painelForm.add(btnAdicionar, 0, 4);
-		painelForm.add(btnPesquisar, 1, 4);
+		
+		FlowPane fpBotoes = new FlowPane();
+		fpBotoes.getChildren().addAll(btnSalvar, btnPesquisar);
+		
+		painelForm.add(btnNovo, 0, 4);
+		painelForm.add(fpBotoes, 1, 4);
 
 		stage.setScene(scn);
 		stage.setTitle("Controle de Despesas");
