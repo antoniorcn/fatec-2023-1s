@@ -6,16 +6,20 @@ import java.time.format.DateTimeFormatter;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.ListChangeListener;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LocalDateStringConverter;
@@ -66,14 +70,62 @@ public class LivroBoundary extends Application {
 					dtf.format(l.getValue().getDataPublicacao())
 				)
 		);
-		double terco = 600.0 / 3.0;
-		colPublicacao.setPrefWidth(terco);
-		colPaginas.setPrefWidth(terco);
-		colTitulo.setPrefWidth(terco);
+		
+		TableColumn<Livro, Void> colAcoes = 
+				new TableColumn<>("Ações");
+		Callback<TableColumn<Livro, Void>, TableCell<Livro, Void>>
+			callBack = new Callback<>() { 
+						
+			@Override
+			public TableCell<Livro, Void> 
+					call(TableColumn<Livro, Void> col) { 				
+				TableCell<Livro, Void> tCell = new TableCell<>() {
+					
+					final Button btnExcluir = new Button("Excluir");
+					{
+						btnExcluir.setOnAction( e -> {
+							Livro l = table.getItems().get(getIndex());  
+							control.excluir(l);
+						} );
+					}
+					
+					@Override
+					public void updateItem(Void item, boolean empty) {
+						super.updateItem(item, empty);
+						if (empty) { 
+							setGraphic(null); 
+						} else { 
+							setGraphic(btnExcluir);
+						}
+					}
+				};
+				return tCell;
+			}			
+		};
+		
+		colAcoes.setCellFactory(callBack);
+		
+		double quarto = 600.0 / 4.0;
+		colPublicacao.setPrefWidth(quarto);
+		colPaginas.setPrefWidth(quarto);
+		colTitulo.setPrefWidth(quarto);
+		colAcoes.setPrefWidth(quarto);
+		
 		
 		table.getColumns().addAll(colTitulo, colPaginas, 
-				colPublicacao);
+				colPublicacao, colAcoes);
 		table.setItems( control.getLista() );
+		
+		table.getSelectionModel().getSelectedItems().addListener(
+				new ListChangeListener<Livro>() {
+					@Override
+					public void onChanged(Change<? extends Livro> l) {
+						if (! l.getList().isEmpty()) { 
+							control.fromEntity(l.getList().get(0));
+						}
+					} 
+				}
+		);
 	}
 	
 	@Override
@@ -94,14 +146,20 @@ public class LivroBoundary extends Application {
 		ligacoes();
 		abastecerTableView();
 		
-		Button btnAdicionar = new Button("Adicionar");
-		btnAdicionar.setOnAction(e -> adicionar());
+		Button btnNovo = new Button("Novo");
+		btnNovo.setOnAction( e -> control.novo() );
+		
+		Button btnSalvar = new Button("Salvar");
+		btnSalvar.setOnAction(e -> adicionar());
 		
 		Button btnPesquisar = new Button("Pesquisar");
 		btnPesquisar.setOnAction(e -> pesquisar());
 		
-		grid.add(btnAdicionar, 0, 3);
-		grid.add(btnPesquisar, 1, 3);
+		FlowPane painelBotoes = new FlowPane();
+		painelBotoes.getChildren().addAll(btnSalvar, btnPesquisar);
+		
+		grid.add(btnNovo, 0, 3);
+		grid.add(painelBotoes, 1, 3);
 		
 		stage.setScene(scn);
 		stage.setTitle("Gestão de Livros");

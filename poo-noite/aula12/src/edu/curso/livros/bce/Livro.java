@@ -3,9 +3,17 @@ package edu.curso.livros.bce;
 import java.time.LocalDate;
 
 public class Livro {
+	private long id;
 	private String titulo;
 	private int paginas;
 	private LocalDate dataPublicacao;
+	
+	public long getId() { 
+		return this.id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	
 	public String getTitulo() {
 		return titulo;
@@ -26,5 +34,9 @@ public class Livro {
 	}
 	public void setDataPublicacao(LocalDate dataPublicacao) {
 		this.dataPublicacao = dataPublicacao;
+	}
+	
+	public String toString() { 
+		return this.id + " - " + this.titulo + " - " + this.paginas;
 	}
 }
