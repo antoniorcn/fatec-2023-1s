@@ -140,6 +140,10 @@ public class DespesaControl {
 		System.out.println("Razao: " + razao.get());
 	}
 	
+	public LongProperty idProperty() {
+		return id;
+	}
+	
 	public StringProperty razaoProperty() { 
 		return razao;
 	}
