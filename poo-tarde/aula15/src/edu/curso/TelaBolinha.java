@@ -6,6 +6,8 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
@@ -26,22 +28,20 @@ public class TelaBolinha extends Application {
 		p.getChildren().add(canvas);
 		
 		GraphicsContext gc2 = canvas.getGraphicsContext2D();
-		
 		new AnimationTimer() {
-			double x = 0;
+			double x = 400;
+			double y = 300;
 			double velX = 10;
-			
+			double angulo = 270;
+			double raio = 200; 
 			@Override
 			public void handle(long now) {
 				gc2.clearRect(0, 0, 800, 600);
-				gc2.fillOval(x, 0, 50, 50);
-				x = x + velX;
-				if ( x > 800 - 50 ) {
-					velX = -10;
-				}
-				if (x < 0) { 
-					velX = 10;
-				}
+				double anguloRad = angulo / 180 * Math.PI;
+				double px = x + (raio/2) * Math.cos(anguloRad);
+				double py = y + raio * Math.sin(anguloRad);
+				angulo = angulo + 1;
+				gc2.fillOval(px, py, 50, 50);
 				try {
 					Thread.sleep(1);
 				} catch (InterruptedException e) {
